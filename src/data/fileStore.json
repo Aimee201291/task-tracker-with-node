@@ -1,14 +1,17 @@
 [
   {
     "id": 1,
-    "name": "Buy groceries"
+    "name": "Buy groceries",
+    "status": "todo"
   },
   {
     "id": 2,
-    "name": "Clean the living room"
+    "name": "Clean the living room",
+    "status": "todo"
   },
   {
     "id": 3,
-    "name": "Have breakfast"
+    "name": "Have breakfast",
+    "status": "todo"
   }
 ]

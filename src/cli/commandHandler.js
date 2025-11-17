@@ -1,4 +1,4 @@
-import  { add } from '../core/taskManager.js';
+import  { add, listAll } from '../core/taskManager.js';
 
 function readInput(mainPath) {
     
@@ -9,11 +9,11 @@ function readInput(mainPath) {
                 add(input, mainPath)
                 console.log('Task added successfully')
                 break;
-            case 'update':
-                listTask();
+            case 'list':
+                listAll(mainPath);
                 break;
             case 'delete':
-                deleteTask();
+                delete(input, mainPath);
                 break;
         }
 }

@@ -85,8 +85,6 @@ async function add(input, mainPath) {
 
     try {
         let firstTaskArray = [];
-        // Ensure the directory exist
-        // The {recursive: true} option ensures that the 'mainPath/data' is created if 'data' does not exist.
         const { maxId, taskArray } = await getMaxIdFromJSON(filePath);
 
         const JSONObject = {
@@ -98,6 +96,8 @@ async function add(input, mainPath) {
         taskArray ? taskArray.push(JSONObject) : firstTaskArray.push(JSONObject);
         const textJSON = JSON.stringify(taskArray ? taskArray : firstTaskArray, null, 2);
 
+        // Ensure the directory exist
+        // The {recursive: true} option ensures that the 'mainPath/data' is created if 'data' does not exist.
         fs.mkdirSync(dirPath, {recursive: true});
         writeFile(filePath, textJSON);
 
@@ -108,13 +108,32 @@ async function add(input, mainPath) {
 
 async function listAll (mainPath) {
     const { filePath } = await generateFilePath(mainPath);
-    
     let data = await getFileContent(filePath);
-
     console.log(data);
 }
 
+async function update(input, mainPath) {
+    const { filePath, dirPath } = await generateFilePath(mainPath);
+
+    const data = await getFileContent(filePath);
+    const taskArray = data.map (task => {
+        if (task.id === parseInt(input[1])) {
+            return {
+                ...task,
+                name: input[2]
+            };
+        };
+        return task;
+    });
+
+    const textJSON = JSON.stringify(taskArray, null, 2);
+
+    fs.mkdirSync(dirPath, {recursive: true});
+    writeFile(filePath, textJSON); 
+};
+
 export {
     add,
-    listAll
+    listAll,
+    update,
 };

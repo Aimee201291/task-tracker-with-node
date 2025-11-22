@@ -132,8 +132,23 @@ async function update(input, mainPath) {
     writeFile(filePath, textJSON); 
 };
 
+async function deleteTask(input, mainPath) {
+    const {filePath, dirPath} = await generateFilePath(mainPath);
+    const data = await getFileContent(filePath);
+    const index = data.findIndex(task => task.id === parseInt(input[1]));
+    if (index !== -1) {
+        data.splice(index, 1);
+        const textJSON = JSON.stringify(data, null, 2);
+        fs.mkdirSync(dirPath, {recursive: true});
+        writeFile(filePath, textJSON); 
+    } else {
+        console.log(`Task with id ${input[1]} not found`);
+    }
+}
+
 export {
     add,
     listAll,
     update,
+    deleteTask,
 };

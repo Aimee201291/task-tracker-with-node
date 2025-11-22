@@ -1,4 +1,4 @@
-import  { add, listAll, update } from '../core/taskManager.js';
+import { add, listAll, update, deleteTask } from '../core/taskManager.js';
 
 function readInput(mainPath) {
     
@@ -16,7 +16,7 @@ function readInput(mainPath) {
                 listAll(mainPath);
                 break;
             case 'delete':
-                delete(input, mainPath);
+                deleteTask(input, mainPath);
                 break;
         }
 }

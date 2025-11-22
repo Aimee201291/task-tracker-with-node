@@ -6,12 +6,17 @@
   },
   {
     "id": 2,
-    "name": "Clean the living room",
+    "name": "Clear the living room",
     "status": "todo"
   },
   {
     "id": 3,
     "name": "Have breakfast",
+    "status": "todo"
+  },
+  {
+    "id": 4,
+    "name": "Clear the desktop",
     "status": "todo"
   }
 ]

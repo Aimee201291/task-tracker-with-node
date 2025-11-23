@@ -112,24 +112,26 @@ async function listAll (mainPath) {
     console.log(data);
 }
 
-async function update(input, mainPath) {
+async function updateTask(input, mainPath) {
     const { filePath, dirPath } = await generateFilePath(mainPath);
-
     const data = await getFileContent(filePath);
-    const taskArray = data.map (task => {
-        if (task.id === parseInt(input[1])) {
-            return {
-                ...task,
-                name: input[2]
+    const index = data.findIndex(task => task.id === parseInt(input[1]));
+    if (index !== -1) {
+        const taskArray = data.map (task => {
+            if (task.id === parseInt(input[1])) {
+                return {
+                    ...task,
+                    name: input[2]
+                };
             };
-        };
-        return task;
-    });
-
-    const textJSON = JSON.stringify(taskArray, null, 2);
-
-    fs.mkdirSync(dirPath, {recursive: true});
-    writeFile(filePath, textJSON); 
+            return task;
+        });
+        const textJSON = JSON.stringify(taskArray, null, 2);
+        fs.mkdirSync(dirPath, {recursive: true});
+        writeFile(filePath, textJSON);
+    } else {
+        console.log(`Task with id ${input[1]} not found`);
+    }
 };
 
 async function deleteTask(input, mainPath) {
@@ -149,6 +151,6 @@ async function deleteTask(input, mainPath) {
 export {
     add,
     listAll,
-    update,
+    updateTask,
     deleteTask,
 };

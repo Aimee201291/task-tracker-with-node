@@ -1,4 +1,4 @@
-import { add, listAll, updateTask, deleteTask } from '../core/taskManager.js';
+import { add, list, updateTask, deleteTask } from '../core/taskManager.js';
 
 function readInput(mainPath) {
     
@@ -13,7 +13,7 @@ function readInput(mainPath) {
                 updateTask(input, mainPath);
                 break;
             case 'list':
-                listAll(mainPath);
+                list(mainPath, input[1]);
                 break;
             case 'delete':
                 deleteTask(input, mainPath);
@@ -24,6 +24,8 @@ function readInput(mainPath) {
             case 'mark-done':
                 updateTask(input, mainPath);
                 break;
+            default:
+                console.log('Invalid command. Must be one of the following: add, list, update, delete, mark-in-progress, mark-done, list todo, list in-progress, list done.');
         }
 }
 

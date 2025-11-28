@@ -106,10 +106,18 @@ async function add(input, mainPath) {
     }
 }
 
-async function listAll (mainPath) {
+async function list (mainPath, status) {
     const { filePath } = await generateFilePath(mainPath);
+    const statusOptions = ['todo', 'in-progress', 'done'];
     let data = await getFileContent(filePath);
-    console.log(data);
+    if (status && statusOptions.includes(status)) {
+        data = data.filter(task => task.status === status);
+        console.log(data);
+    } else if (status && !statusOptions.includes(status)) {
+        console.log('Invalid status. Must be one of the following: todo, in-progress, done.')
+    } else if (!status) {
+        console.log(data);
+    }
 }
 
 async function updateTask(input, mainPath) {
@@ -152,7 +160,7 @@ async function deleteTask(input, mainPath) {
 
 export {
     add,
-    listAll,
+    list,
     updateTask,
     deleteTask,
 };

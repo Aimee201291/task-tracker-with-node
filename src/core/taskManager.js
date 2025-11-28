@@ -80,33 +80,37 @@ function writeFile(route, content) {
     })
 }
 
-async function add(input, mainPath) {
-    const { filePath, dirPath } = await generateFilePath(mainPath);
+async function addTask(input, mainPath) {
+    if (input.length > 1) {
+        const { filePath, dirPath } = await generateFilePath(mainPath);
+        try {
+            let firstTaskArray = [];
+            const { maxId, taskArray } = await getMaxIdFromJSON(filePath);
 
-    try {
-        let firstTaskArray = [];
-        const { maxId, taskArray } = await getMaxIdFromJSON(filePath);
+            const JSONObject = {
+                id: maxId ? maxId + 1 : 1,
+                name: input.slice(1, input.length).join(' '),
+                status: 'todo'
+            }
 
-        const JSONObject = {
-            id: maxId ? maxId + 1 : 1,
-            name: input[1],
-            status: 'todo'
+            taskArray ? taskArray.push(JSONObject) : firstTaskArray.push(JSONObject);
+            const textJSON = JSON.stringify(taskArray ? taskArray : firstTaskArray, null, 2);
+
+            // Ensure the directory exist
+            // The {recursive: true} option ensures that the 'mainPath/data' is created if 'data' does not exist.
+            fs.mkdirSync(dirPath, {recursive: true});
+            writeFile(filePath, textJSON);
+            console.log('Task added successfully')
+
+        } catch (error) {
+            console.log('Error: ', error)
         }
-
-        taskArray ? taskArray.push(JSONObject) : firstTaskArray.push(JSONObject);
-        const textJSON = JSON.stringify(taskArray ? taskArray : firstTaskArray, null, 2);
-
-        // Ensure the directory exist
-        // The {recursive: true} option ensures that the 'mainPath/data' is created if 'data' does not exist.
-        fs.mkdirSync(dirPath, {recursive: true});
-        writeFile(filePath, textJSON);
-
-    } catch (error) {
-        console.log('Error: ', error)
+    } else {
+        console.log('Task name is required to add a new task. Usage: add "Task name"')
     }
 }
 
-async function list (mainPath, status) {
+async function listTasks (mainPath, status) {
     const { filePath } = await generateFilePath(mainPath);
     const statusOptions = ['todo', 'in-progress', 'done'];
     let data = await getFileContent(filePath);
@@ -121,46 +125,56 @@ async function list (mainPath, status) {
 }
 
 async function updateTask(input, mainPath) {
-    const { filePath, dirPath } = await generateFilePath(mainPath);
-    const data = await getFileContent(filePath);
-    const index = data.findIndex(task => task.id === parseInt(input[1]));
-    if (index !== -1) {
-        const taskArray = data.map (task => {
-            if (task.id === parseInt(input[1])) {
-                return {
-                    ...task,
-                    name: input[0] === 'update' ? input[2] : task.name,
-                    status: input[0] === 'mark-in-progress' ? 'in-progress'
-                            : input[0] === 'mark-done' ? 'done' : task.status
+    if (input.length > 2 || ((input[0] === 'mark-in-progress' || input[0] === 'mark-done') && input.length > 1)) {
+        const { filePath, dirPath } = await generateFilePath(mainPath);
+        const data = await getFileContent(filePath);
+        const index = data.findIndex(task => task.id === parseInt(input[1]));
+        if (index !== -1) {
+            const taskArray = data.map (task => {
+                if (task.id === parseInt(input[1])) {
+                    return {
+                        ...task,
+                        name: input[0] === 'update' ? input.slice(2, input.length).join(' ') : task.name,
+                        status: input[0] === 'mark-in-progress' ? 'in-progress'
+                                : input[0] === 'mark-done' ? 'done' : task.status
+                    };
                 };
-            };
-            return task;
-        });
-        const textJSON = JSON.stringify(taskArray, null, 2);
-        fs.mkdirSync(dirPath, {recursive: true});
-        writeFile(filePath, textJSON);
-    } else {
-        console.log(`Task with id ${input[1]} not found`);
+                return task;
+            });
+            const textJSON = JSON.stringify(taskArray, null, 2);
+            fs.mkdirSync(dirPath, {recursive: true});
+            writeFile(filePath, textJSON);
+        } else {
+            console.log(`Task with id ${input[1]} not found`);
+        }
+    } else if (input[0] === 'update') {
+        console.log('Task id and new name are required to update a task. Usage: update <task_id> "New task name".')
+    } else if (input[0] === 'mark-in-progress' || input[0] === 'mark-done') {
+        console.log('Task id is required to update the status of a task. Usage: mark-in-progress <task_id> OR mark-done <task_id>.')
     }
 };
 
 async function deleteTask(input, mainPath) {
-    const {filePath, dirPath} = await generateFilePath(mainPath);
-    const data = await getFileContent(filePath);
-    const index = data.findIndex(task => task.id === parseInt(input[1]));
-    if (index !== -1) {
-        data.splice(index, 1);
-        const textJSON = JSON.stringify(data, null, 2);
-        fs.mkdirSync(dirPath, {recursive: true});
-        writeFile(filePath, textJSON); 
+    if (input.length > 1) {
+        const {filePath, dirPath} = await generateFilePath(mainPath);
+        const data = await getFileContent(filePath);
+        const index = data.findIndex(task => task.id === parseInt(input[1]));
+        if (index !== -1) {
+            data.splice(index, 1);
+            const textJSON = JSON.stringify(data, null, 2);
+            fs.mkdirSync(dirPath, {recursive: true});
+            writeFile(filePath, textJSON); 
+        } else {
+            console.log(`Task with id ${input[1]} not found`);
+        }
     } else {
-        console.log(`Task with id ${input[1]} not found`);
+        console.log('Task id is required to delete a task. Usage: delete <task_id>.')
     }
 }
 
 export {
-    add,
-    list,
+    addTask,
+    listTasks,
     updateTask,
     deleteTask,
 };

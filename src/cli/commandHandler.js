@@ -18,6 +18,12 @@ function readInput(mainPath) {
             case 'delete':
                 deleteTask(input, mainPath);
                 break;
+            case 'mark-in-progress':
+                updateTask(input, mainPath);
+                break;
+            case 'mark-done':
+                updateTask(input, mainPath);
+                break;
         }
 }
 

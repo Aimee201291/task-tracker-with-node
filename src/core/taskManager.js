@@ -121,7 +121,9 @@ async function updateTask(input, mainPath) {
             if (task.id === parseInt(input[1])) {
                 return {
                     ...task,
-                    name: input[2]
+                    name: input[0] === 'update' ? input[2] : task.name,
+                    status: input[0] === 'mark-in-progress' ? 'in-progress'
+                            : input[0] === 'mark-done' ? 'done' : task.status
                 };
             };
             return task;
